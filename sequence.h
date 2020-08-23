@@ -19,5 +19,4 @@ float get_sequence_weight(const Sequence* s1, const Sequence* s2, int offset, fl
 int get_max_weight_offset (const Sequence *s1, const Sequence *s2, float w1, float w2, float w3, float w4);
 void get_max_weight_mutant(const Sequence* s1, const Sequence* s2, float w1, float w2, float w3, float w4, int* best_ms, int* best_offset);
 
-
 #endif //PARALLEL_FINAL_C_UTILS_C_SEQUENCE_H_

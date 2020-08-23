@@ -13,7 +13,7 @@ int main()
 	Sequence** seq2 = (Sequence**)calloc(1, sizeof(Sequence*));
 
 	omp_set_num_threads(8);
-printf("Num of threads %d\n",omp_get_num_threads() );
+	printf("Num of threads %d\n", omp_get_num_threads());
 	f = fopen(FILE_NAME, "r");
 	if (!f)
 	{
@@ -24,20 +24,16 @@ printf("Num of threads %d\n",omp_get_num_threads() );
 	fclose(f);
 	printf("W1=%.1f\tW2=%.1f\tW3=%.1f\tW4=%.1f\t\n\nMain Sequence:\n%s\n\n", w1, w2, w3, w4, seq1.str);
 
-int i;
-
-	for ( i = 0; i < ns2; i++)
-	{	int best_ms, best_offset;
-		printf("------------------------------------------------------------------\n");
+	for (int i = 0; i < ns2; i++)
+	{
+		int best_ms, best_offset;
 		printf("Now comparing with DNA no.%d\n\n", i);
 		get_max_weight_mutant(&seq1, seq2[i], w1, w2, w3, w4, &best_ms, &best_offset);
 		printf("Best offset: Ms(%d) with offset %d\n", best_ms, best_offset);
 		print_time_diff(start, clock());
 	}
-
-
-	time_t end = clock();
-	print_time_diff(start, end);
+	//time_t end = clock();
+	//print_time_diff(start, end);
 	return 0;
 }
 
