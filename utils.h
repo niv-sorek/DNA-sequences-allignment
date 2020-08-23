@@ -13,7 +13,7 @@
 #define CONSERVATIVE_GROUP_COUNT 9
 
 
-void print_time_diff(time_t start, time_t end);
+void print_time_diff(double start, double end);
 
 void print_error(char *string);
 

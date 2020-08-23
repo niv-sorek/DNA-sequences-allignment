@@ -12,6 +12,7 @@ int is_semi_conservative (char a, char b)
   char *groups[SEMI_GROUPS_COUNT] = {"SAG", "SGND", "NEQHRK", "ATV", "STPA", "NDEQHK", "HFY", "CSA", "STNK", "SNDEQK",
       "FVLIM"};
   int count = 0;
+//#pragma omp parallel for
   for (int i = 0; i < SEMI_GROUPS_COUNT; i++)
     {
       if (strchr (groups[i], a) != NULL && strchr (groups[i], b) != NULL)
@@ -21,6 +22,7 @@ int is_semi_conservative (char a, char b)
 }
 Sign compare_chars (char a, char b)
 {
+
   if (a == b)
     return IDENTICAL;
   else if (is_conservative (a, b) > 0)

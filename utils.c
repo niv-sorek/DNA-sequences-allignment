@@ -71,14 +71,11 @@ void read_data_from_file(FILE* f, float* w1, float* w2, float* w3, float* w4,
 }
 
 
-void print_time_diff(time_t start, time_t end)
+void print_time_diff(double	 start, double end)
 {
 	printf("------------------------------------------------------------------\n");
-	printf("\tTotal execution time: %ld ms (%.2f seconds =  %d:%d) .\n",
-		end - start,
-		(double)(end - start) / 1000,
-		((end - start) / 1000) / 60,
-		((end - start) / 1000) % 60);
+	printf("\tTotal execution time: %e ms  .\n",
+		(end - start));
 	printf("------------------------------------------------------------------\n");
 }
 

@@ -116,7 +116,7 @@ float get_sequence_weight(const Sequence* s1, const Sequence* s2, int offset, fl
 	float sum = 0;
 	//char arr[] = { '*', ':', '.', ' ' };
 	int j;
-//#pragma omp parallel for shared( s1,s2,w1,w2,w3,w4) reduction(+: sum)
+//#pragma omp parallel for private (j) reduction(+: sum)
 	for (j = 0; j < s2->len; j++)
 	{
 		//printf("%d\n", j);
@@ -136,7 +136,6 @@ int get_max_weight_offset(const Sequence* s1, const Sequence* s2, float w1, floa
 	for (int offset = 1; offset < limit; ++offset)
 	{
 		w = get_sequence_weight(s1, s2, offset, w1, w2, w3, w4);
-
 		if (w > max_weight)
 		{
 			max_weight = w;
