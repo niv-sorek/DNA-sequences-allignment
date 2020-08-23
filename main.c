@@ -25,7 +25,7 @@ printf("Num of threads %d\n",omp_get_num_threads() );
 	printf("W1=%.1f\tW2=%.1f\tW3=%.1f\tW4=%.1f\t\n\nMain Sequence:\n%s\n\n", w1, w2, w3, w4, seq1.str);
 
 int i;
-#pragma omp for
+
 	for ( i = 0; i < ns2; i++)
 	{	int best_ms, best_offset;
 		printf("------------------------------------------------------------------\n");
