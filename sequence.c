@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <omp.h>
 /***
  *
  * @param ptr
@@ -35,7 +36,8 @@ void read_seq(FILE* file, Sequence* sequence)
 	while (c != '\n' && c != '\0')
 	{
 
-		str = (char*)realloc(str, sizeof(char) * (sequence->len + 1));
+		str = (char*)realloc(str, sizeof(char) * (sequence->len + 2));
+
 		if (!str)
 		{
 			print_error("Allocation failed");
@@ -65,7 +67,7 @@ void get_mutant_sequences(Sequence** mutants, const Sequence* seq)
 	}
 	for (int i = 0; i < seq->len; i++)
 	{
-		tmp[i].len = seq->len + 1;
+
 		tmp[i].str = (char*)malloc(sizeof(char) * strlen(seq->str));
 		if (!tmp[i].str)
 		{
@@ -73,9 +75,10 @@ void get_mutant_sequences(Sequence** mutants, const Sequence* seq)
 			return;
 		}
 		strcpy(tmp[i].str, get_ms(seq, i));
-
+		tmp[i].len = seq->len + 1;
 	}
 	printf("%d DNA mutants created\n", seq->len);
+
 	*mutants = tmp;
 	free(tmp);
 }
@@ -112,12 +115,13 @@ float get_sequence_weight(const Sequence* s1, const Sequence* s2, int offset, fl
 {
 	float sum = 0;
 	//char arr[] = { '*', ':', '.', ' ' };
-
-	for (int i = offset, j = 0; i < s1->len && j < s2->len; i++, j++)
+	int j;
+//#pragma omp parallel for shared( s1,s2,w1,w2,w3,w4) reduction(+: sum)
+	for (j = 0; j < s2->len; j++)
 	{
-
-	//	printf("%d -%d)\t%c-%c=%c\n", i, j, s1->str[i], s2->str[j], arr[compare_chars(s1->str[i], s2->str[j])]);
-		sum += char_compare_weight(s1->str[i], s2->str[j], w1, w2, w3, w4);
+		//printf("%d\n", j);
+		//	printf("%d -%d)\t%c-%c=%c\n", i, j, s1->str[i], s2->str[j], arr[compare_chars(s1->str[i], s2->str[j])]);
+		sum += char_compare_weight(s1->str[j - offset], s2->str[j], w1, w2, w3, w4);
 	}
 	return sum;
 }
@@ -128,7 +132,7 @@ int get_max_weight_offset(const Sequence* s1, const Sequence* s2, float w1, floa
 	int max_offset = 0;
 	int limit = s1->len - s2->len + 1;
 	float w;
-
+//#pragma omp parallel for
 	for (int offset = 1; offset < limit; ++offset)
 	{
 		w = get_sequence_weight(s1, s2, offset, w1, w2, w3, w4);
@@ -153,14 +157,14 @@ void get_max_weight_mutant(const Sequence* s1,
 {
 	Sequence* mutants = (Sequence*)malloc(sizeof(Sequence) * s2->len);
 	get_mutant_sequences(&mutants, s2);
-	int max_offset = get_max_weight_offset(s1, &mutants[0], w1, w2, w3, w4);
+	int max_offset = get_max_weight_offset(s1, &mutants[1], w1, w2, w3, w4);
 	float max_weight = get_sequence_weight(s1, s2, max_offset, w1, w2, w3, w4);
 	int max_i = 0;
 	int w, offset;
-	for (int i = 1; i < s2->len; i++)
+	for (int i = 2; i < s2->len; i++)
 	{
 		offset = get_max_weight_offset(s1, &mutants[i], w1, w2, w3, w4);
-		w = get_sequence_weight(s1, s2, offset, w1, w2, w3, w4);
+		w = get_sequence_weight(s1, &mutants[i], offset, w1, w2, w3, w4);
 
 		if (w > max_weight)
 		{
