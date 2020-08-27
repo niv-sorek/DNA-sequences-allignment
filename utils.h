@@ -12,6 +12,7 @@
 #define SEMI_GROUPS_COUNT 11
 #define CONSERVATIVE_GROUP_COUNT 9
 
+#define SEQUENCE_VARS 9
 
 void print_time_diff(double start, double end);
 

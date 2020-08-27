@@ -33,33 +33,33 @@ int main(int argc, char** argv)
 		read_data_from_file(f, &ns2, &seq);
 		fclose(f);
 		if (size < 2)
-			MPI_Abort(MPI_COMM_WORLD, 0);
+			MPI_Abort(MPI_COMM_WORLD, __LINE__);
 		sequences_per_proc = ns2 / (size - 1);
 
 		// 		Telling every Process how many sequences it's about to get
 		for (int i = 1; i < size; i++)
-			MPI_Send(&sequences_per_proc, 1, MPI_INT, i, 0, MPI_COMM_WORLD);
+			MPI_Send(&sequences_per_proc, 1, MPI_INT, i, TAG, MPI_COMM_WORLD);
 		//		Sending each process part of sequences
 		for (int i = 0; i * sequences_per_proc < ns2; i++)
 		{
 			MPI_Send(&seq[i * sequences_per_proc], sequences_per_proc,
-				SequenceMPIType, i + 1, 0, MPI_COMM_WORLD);
+				SequenceMPIType, i + 1, TAG, MPI_COMM_WORLD);
 		}
 
-		char output[ns2][100];
+		char output[ns2][LINE_LEN];
 		//		Gathering answers
 		for (int j = 0; j < ns2; j++)
 		{
 			Sequence received;
-			MPI_Recv(&received, 1, SequenceMPIType, MPI_ANY_SOURCE, 0,
+			MPI_Recv(&received, 1, SequenceMPIType, MPI_ANY_SOURCE, TAG,
 				MPI_COMM_WORLD, &status);
-			char str[100];
-			snprintf(str, 100, "seq %d\tBest offset: Ms(%d) with offset %d\n",
+			char str[LINE_LEN];
+			snprintf(str, LINE_LEN, "seq %d\tBest offset: Ms(%d) with offset %d\n",
 				(received.id), received.best_ms, received.best_offset);
 			strcpy(output[received.id], str);
 			print_time_diff(start, MPI_Wtime());
 		}
-		f = fopen("output.txt", "w");
+		f = fopen(OUTPUT_FILE_NAME, "w");
 		for (int i = 0; i < ns2; i++)
 			fputs(output[i], f);
 		fclose(f);
@@ -67,11 +67,11 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		MPI_Recv(&sequences_per_proc, 1, MPI_INT, 0, 0, MPI_COMM_WORLD,
+		MPI_Recv(&sequences_per_proc, 1, MPI_INT, MASTER_RANK, TAG, MPI_COMM_WORLD,
 			&status);
 		Sequence* sequence = (Sequence*)malloc(
 			sizeof(Sequence) * sequences_per_proc);
-		MPI_Recv(sequence, sequences_per_proc, SequenceMPIType, 0, 0,
+		MPI_Recv(sequence, sequences_per_proc, SequenceMPIType, MASTER_RANK, TAG,
 			MPI_COMM_WORLD, &status);
 
 //#pragma omp parallel for
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 		{
 			printf("Now comparing with DNA no.%d\n", rank);
 			get_max_weight_mutant(&sequence[i]);
-			MPI_Send(&(sequence[i]), 1, SequenceMPIType, 0, 0,
+			MPI_Send(&(sequence[i]), 1, SequenceMPIType, MASTER_RANK, TAG,
 				MPI_COMM_WORLD);
 		}
 	}

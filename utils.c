@@ -89,10 +89,10 @@ void print_time_diff(double start, double end)
 void getDatatype(MPI_Datatype* SequenceMPIType)
 {
 	Sequence s;
-	MPI_Datatype type[9] = { MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT,
+	MPI_Datatype type[SEQUENCE_VARS] = { MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT,
 		MPI_FLOAT, MPI_FLOAT, MPI_INT, MPI_INT, MPI_INT };
-	int blocklen[9] = { MAX_DNA, MAX_RNA, 1, 1, 1, 1, 1, 1, 1 };
-	MPI_Aint disp[9];
+	int blocklen[SEQUENCE_VARS] = { MAX_DNA, MAX_RNA, 1, 1, 1, 1, 1, 1, 1 };
+	MPI_Aint disp[SEQUENCE_VARS];
 	disp[0] = (char*)&s.dna - (char*)&s;
 	disp[1] = (char*)&s.rna - (char*)&s;
 	disp[2] = (char*)&s.w1 - (char*)&s;
@@ -102,7 +102,7 @@ void getDatatype(MPI_Datatype* SequenceMPIType)
 	disp[6] = (char*)&s.best_offset - (char*)&s;
 	disp[7] = (char*)&s.best_ms - (char*)&s;
 	disp[8] = (char*)&s.id - (char*)&s;
-	MPI_Type_create_struct(9, blocklen, disp, type, SequenceMPIType);
+	MPI_Type_create_struct(SEQUENCE_VARS, blocklen, disp, type, SequenceMPIType);
 	MPI_Type_commit(SequenceMPIType);
 
 }
