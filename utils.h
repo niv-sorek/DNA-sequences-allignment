@@ -18,6 +18,7 @@ void print_time_diff(double start, double end);
 void print_error(char *string);
 
 void read_weights(FILE *f, float *w1, float *w2, float *w3, float *w4);
+void getDatatype(MPI_Datatype* SequenceMPIType);
 
 void read_data_from_file(FILE* f,  int* ns2, Sequence** seq1);
 

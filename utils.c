@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "parallel/mpi.h"
 #include "utils.h"
-#include "char_cmp.h"
-#include "sequence.h"
+
 /***
  * @details helper function to print errors easily to stderr
  * @param string
@@ -86,4 +86,23 @@ void print_time_diff(double start, double end)
 		(end - start));
 	printf("------------------------------------------------------------------\n");
 }
+void getDatatype(MPI_Datatype* SequenceMPIType)
+{
+	Sequence s;
+	MPI_Datatype type[9] = { MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT,
+		MPI_FLOAT, MPI_FLOAT, MPI_INT, MPI_INT, MPI_INT };
+	int blocklen[9] = { MAX_DNA, MAX_RNA, 1, 1, 1, 1, 1, 1, 1 };
+	MPI_Aint disp[9];
+	disp[0] = (char*)&s.dna - (char*)&s;
+	disp[1] = (char*)&s.rna - (char*)&s;
+	disp[2] = (char*)&s.w1 - (char*)&s;
+	disp[3] = (char*)&s.w2 - (char*)&s;
+	disp[4] = (char*)&s.w3 - (char*)&s;
+	disp[5] = (char*)&s.w4 - (char*)&s;
+	disp[6] = (char*)&s.best_offset - (char*)&s;
+	disp[7] = (char*)&s.best_ms - (char*)&s;
+	disp[8] = (char*)&s.id - (char*)&s;
+	MPI_Type_create_struct(9, blocklen, disp, type, SequenceMPIType);
+	MPI_Type_commit(SequenceMPIType);
 
+}

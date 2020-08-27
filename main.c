@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 {
 
 	int ns2 = 0; // number of rna's
-	Sequence s;
+
 	int rank, size;
 	time_t start = MPI_Wtime();
 	MPI_Init(&argc, &argv);
@@ -19,21 +19,7 @@ int main(int argc, char** argv)
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Status status;
 	MPI_Datatype SequenceMPIType;
-	MPI_Datatype type[9] = { MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT,
-		MPI_FLOAT, MPI_FLOAT, MPI_INT, MPI_INT, MPI_INT };
-	int blocklen[9] = { MAX_DNA, MAX_RNA, 1, 1, 1, 1, 1, 1, 1 };
-	MPI_Aint disp[9];
-	disp[0] = (char*)&s.dna - (char*)&s;
-	disp[1] = (char*)&s.rna - (char*)&s;
-	disp[2] = (char*)&s.w1 - (char*)&s;
-	disp[3] = (char*)&s.w2 - (char*)&s;
-	disp[4] = (char*)&s.w3 - (char*)&s;
-	disp[5] = (char*)&s.w4 - (char*)&s;
-	disp[6] = (char*)&s.best_offset - (char*)&s;
-	disp[7] = (char*)&s.best_ms - (char*)&s;
-	disp[8] = (char*)&s.id - (char*)&s;
-	MPI_Type_create_struct(9, blocklen, disp, type, &SequenceMPIType);
-	MPI_Type_commit(&SequenceMPIType);
+	getDatatype(&SequenceMPIType);
 	int sequences_per_proc;
 	if (rank == 0)
 	{
@@ -104,4 +90,5 @@ int main(int argc, char** argv)
 	MPI_Finalize();
 	return 0;
 }
+
 
