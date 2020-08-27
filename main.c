@@ -68,7 +68,6 @@ int main(int argc, char** argv)
 		for (int j = 0; j < ns2; j++)
 		{
 			Sequence received;
-			printf("waiting...\n");
 			MPI_Recv(&received, 1, SequenceMPIType, MPI_ANY_SOURCE, 0,
 				MPI_COMM_WORLD, &status);
 			char str[100];
@@ -81,7 +80,6 @@ int main(int argc, char** argv)
 		for (int i = 0; i < ns2; i++)
 			fputs(output[i], f);
 		fclose(f);
-		printf("All Sent");
 
 	}
 	else
@@ -98,7 +96,6 @@ int main(int argc, char** argv)
 		{
 			printf("Now comparing with DNA no.%d\n", rank);
 			get_max_weight_mutant(&sequence[i]);
-			printf("%d end\n", rank);
 			MPI_Send(&(sequence[i]), 1, SequenceMPIType, 0, 0,
 				MPI_COMM_WORLD);
 		}
