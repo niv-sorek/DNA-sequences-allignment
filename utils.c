@@ -82,7 +82,7 @@ void read_data_from_file(FILE* f, int* count, Sequence** sequence)
 void print_time_diff(double start, double end)
 {
 	printf("------------------------------------------------------------------\n");
-	printf("\tTotal execution time: %f ms  .\n",
+	printf("\tTotal execution time: %f seconds.\n",
 		(end - start));
 	printf("------------------------------------------------------------------\n");
 }
