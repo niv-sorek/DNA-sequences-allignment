@@ -92,10 +92,7 @@ int main(int argc, char** argv)
 			sizeof(Sequence) * sequences_per_proc);
 		MPI_Recv(sequence, sequences_per_proc, SequenceMPIType, 0, 0,
 			MPI_COMM_WORLD, &status);
-//		printf(
-//				"%d recieved\nW1=%.1f\tW2=%.1f\tW3=%.1f\tW4=%.1f\t\n\nMain Sequence:\n%s\n\n",
-//				rank, sequence.w1, sequence.w2, sequence.w3, sequence.w4,
-//				sequence.rna);
+
 //#pragma omp parallel for
 		for (int i = 0; i < sequences_per_proc; i++)
 		{
