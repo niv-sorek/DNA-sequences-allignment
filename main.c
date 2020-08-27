@@ -2,8 +2,6 @@
 #include "sequence.h"
 #include "utils.h"
 #include <stdlib.h>
-#include <time.h>
-#include <omp.h>
 #include <string.h>
 #include "parallel/mpi.h"
 
@@ -23,7 +21,6 @@ int main(int argc, char** argv)
 	int sequences_per_proc;
 	if (rank == 0)
 	{
-		int count = 0;
 		FILE* f;
 		f = fopen(FILE_NAME, "r");
 		if (!f)
