@@ -9,4 +9,5 @@
 #define MASTER_RANK 0
 #define LINE_LEN 100
 #define OUTPUT_FILE_NAME "output.txt"
+#define MINIMUM_PROCS 2
 #endif //PARALLEL_FINAL_C_MAIN_H

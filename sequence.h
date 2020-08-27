@@ -14,7 +14,7 @@ typedef struct
 	float w1, w2, w3, w4;
 	int best_offset, best_ms, id;
 } Sequence;
-void print_seq(Sequence* ptr);
+__unused void print_seq(Sequence* ptr);
 void read_seq(FILE* file, char* dna);
 void get_mutant_sequences(Sequence** mutants, const Sequence* seq);
 void get_ms(const Sequence* seq, const int i, char mut[MAX_RNA]);

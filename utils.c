@@ -82,15 +82,14 @@ void read_data_from_file(FILE* f, int* count, Sequence** sequence)
 void print_time_diff(double start, double end)
 {
 	printf("------------------------------------------------------------------\n");
-	printf("\tTotal execution time: %f seconds.\n",
-		(end - start));
+	printf("\tTotal execution time: %f seconds.\n", (end - start));
 	printf("------------------------------------------------------------------\n");
 }
 void getDatatype(MPI_Datatype* SequenceMPIType)
 {
 	Sequence s;
-	MPI_Datatype type[SEQUENCE_VARS] = { MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT,
-		MPI_FLOAT, MPI_FLOAT, MPI_INT, MPI_INT, MPI_INT };
+	MPI_Datatype type[SEQUENCE_VARS] =
+		{ MPI_CHAR, MPI_CHAR, MPI_FLOAT, MPI_FLOAT, MPI_FLOAT, MPI_FLOAT, MPI_INT, MPI_INT, MPI_INT };
 	int blocklen[SEQUENCE_VARS] = { MAX_DNA, MAX_RNA, 1, 1, 1, 1, 1, 1, 1 };
 	MPI_Aint disp[SEQUENCE_VARS];
 	disp[0] = (char*)&s.dna - (char*)&s;

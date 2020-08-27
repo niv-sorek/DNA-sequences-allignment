@@ -1,3 +1,4 @@
+#include <endian.h>
 //
 // Created by sorek on 21/08/2020.
 //
@@ -14,7 +15,7 @@
  * @param ptr
  * @details prints the Sequence and its length
  */
-void print_seq(Sequence* ptr)
+__unused void print_seq(Sequence* ptr)
 {
 	printf("%s\n", ptr->rna);
 
@@ -38,7 +39,7 @@ void read_seq(FILE* file, char* dna)
 void get_mutant_sequences(Sequence** mutants, const Sequence* seq)
 {
 	*mutants = (Sequence*)malloc(sizeof(Sequence) * strlen(seq->rna));
-	if (!mutants)
+	if (!*mutants)
 	{
 		print_error("Allocation failed ( tmp in get_mutant_sequences() )");
 		return;
@@ -122,7 +123,8 @@ void get_max_weight_mutant(Sequence* const s1)
 	s1->best_offset = get_max_weight_offset(mutants[1]);
 	float max_weight = get_sequence_weight(mutants[1], s1->best_offset);
 
-	int w, offset;
+	float w;
+	int offset;
 //#pragma pmp parallel for
 	for (int i = 2; i < strlen(s1->rna) - 1; i++)
 	{

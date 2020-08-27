@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	MPI_Datatype SequenceMPIType;
 	getDatatype(&SequenceMPIType);
 	int sequences_per_proc;
-	if (rank == 0)
+	if (rank == MASTER_RANK)
 	{
 		FILE* f;
 		f = fopen(FILE_NAME, "r");
@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 		Sequence* seq = (Sequence*)malloc(sizeof(Sequence));
 		read_data_from_file(f, &ns2, &seq);
 		fclose(f);
-		if (size < 2)
+		if (size < MINIMUM_PROCS)
 			MPI_Abort(MPI_COMM_WORLD, __LINE__);
 		sequences_per_proc = ns2 / (size - 1);
 
@@ -42,8 +42,7 @@ int main(int argc, char** argv)
 		//		Sending each process part of sequences
 		for (int i = 0; i * sequences_per_proc < ns2; i++)
 		{
-			MPI_Send(&seq[i * sequences_per_proc], sequences_per_proc,
-				SequenceMPIType, i + 1, TAG, MPI_COMM_WORLD);
+			MPI_Send(&seq[i * sequences_per_proc], sequences_per_proc, SequenceMPIType, i + 1, TAG, MPI_COMM_WORLD);
 		}
 
 		char output[ns2][LINE_LEN];
@@ -51,11 +50,9 @@ int main(int argc, char** argv)
 		for (int j = 0; j < ns2; j++)
 		{
 			Sequence received;
-			MPI_Recv(&received, 1, SequenceMPIType, MPI_ANY_SOURCE, TAG,
-				MPI_COMM_WORLD, &status);
+			MPI_Recv(&received, 1, SequenceMPIType, MPI_ANY_SOURCE, TAG, MPI_COMM_WORLD, &status);
 			char str[LINE_LEN];
-			snprintf(str, LINE_LEN, "seq %d\tBest offset: Ms(%d) with offset %d\n",
-				(received.id), received.best_ms, received.best_offset);
+			snprintf(str, LINE_LEN, "seq %d\tBest offset: Ms(%d) with offset %d\n", (received.id), received.best_ms, received.best_offset);
 			strcpy(output[received.id], str);
 			print_time_diff(start, MPI_Wtime());
 		}
@@ -67,20 +64,16 @@ int main(int argc, char** argv)
 	}
 	else
 	{
-		MPI_Recv(&sequences_per_proc, 1, MPI_INT, MASTER_RANK, TAG, MPI_COMM_WORLD,
-			&status);
-		Sequence* sequence = (Sequence*)malloc(
-			sizeof(Sequence) * sequences_per_proc);
-		MPI_Recv(sequence, sequences_per_proc, SequenceMPIType, MASTER_RANK, TAG,
-			MPI_COMM_WORLD, &status);
+		MPI_Recv(&sequences_per_proc, 1, MPI_INT, MASTER_RANK, TAG, MPI_COMM_WORLD, &status);
+		Sequence* sequence = (Sequence*)malloc(sizeof(Sequence) * sequences_per_proc);
+		MPI_Recv(sequence, sequences_per_proc, SequenceMPIType, MASTER_RANK, TAG, MPI_COMM_WORLD, &status);
 
 //#pragma omp parallel for
 		for (int i = 0; i < sequences_per_proc; i++)
 		{
 			printf("Now comparing with DNA no.%d\n", rank);
 			get_max_weight_mutant(&sequence[i]);
-			MPI_Send(&(sequence[i]), 1, SequenceMPIType, MASTER_RANK, TAG,
-				MPI_COMM_WORLD);
+			MPI_Send(&(sequence[i]), 1, SequenceMPIType, MASTER_RANK, TAG, MPI_COMM_WORLD);
 		}
 	}
 
